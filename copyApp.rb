@@ -16,7 +16,7 @@ class RemoteApp
     @ip_address = ip_address
     @username = username
     @session = NIL
-    @tty = (tty == NIL ? "" : "> #{tty}")
+    @tty = (tty.empty? ? "" : "> #{tty}")
   end
 
   def connect
@@ -28,7 +28,7 @@ class RemoteApp
   end
 
   def start
-      @session.exec!("/etc/init.d/S99superviseur start #{@tty}")
+    output = @session.exec!("/etc/init.d/S99superviseur start #{@tty}")
   end
 
   def stop

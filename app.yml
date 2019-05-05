@@ -1,0 +1,16 @@
+---
+:configs:
+  ip: 192.168.1.15
+  user: pi
+  tty: /dev/pts/0
+  app: App
+  path: "/opt/bin/"
+:actions:
+- name: Start
+  ssh: true
+  use_path: true
+  cmd: start
+- name: Stop
+  ssh: true
+  use_path: true
+  cmd: stop

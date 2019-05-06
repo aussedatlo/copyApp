@@ -1,16 +1,20 @@
 ---
 :configs:
-  ip: 192.168.1.15
-  user: pi
-  tty: /dev/pts/0
-  app: App
-  path: "/opt/bin/"
+  :ip: 192.168.1.15
+  :user: pi
+  :tty: "/dev/pts/0"
+  :path: "/path/to/application"
+  :gen: ucineo-generic
 :actions:
-- name: Start
-  ssh: true
-  use_path: true
-  cmd: start
-- name: Stop
-  ssh: true
-  use_path: true
-  cmd: stop
+- :name: Start
+  :cmd: ssh <user>@<ip> '<path> start > <tty>'
+- :name: Stop
+  :cmd: ssh <user>@<ip> '<path> stop > <tty>'
+- :name: Build
+  :cmd: "./build.sh <gen>"
+- :name: Transfert
+  :cmd: scp build/<gen>/app <user>@<ip>:/opt/bin/app
+- :name: Sync
+  :cmd: ssh <user>@<ip> sync
+- :name: Reboot
+  :cmd: ssh <user>@<ip> reboot

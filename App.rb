@@ -7,6 +7,10 @@ require 'colorize'
 require 'flammarion'
 
 $CONF_FILE = "app.yml"
+$COLORIZE = [ {:str => "errors:"  , :color => :red    },
+              {:str => "error:"   , :color => :red    },
+              {:str => "warning:" , :color => :yellow },
+              {:str => "note:"    , :color => :cyan   } ]
 
 class FenetreApp
 
@@ -47,7 +51,7 @@ class FenetreApp
     @f.subpane(:p_input).puts("# Actions à exécuter".yellow)
     @conf[:actions].each do |item|
       @f.subpane(:p_input).button(item[:name]) do
-        @f.pane(:log, weight:1.8).subpane(:log_actions).replace("")
+        @f.pane(:log, weight:3).subpane(:log_actions).replace("")
         log_actions "commande #{item[:name]}", true
 
         cmd = parse_cmd item[:cmd]
@@ -55,27 +59,30 @@ class FenetreApp
         Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
           # On affiche le stdout en temps réel
           while line = stdout.gets
-            puts line
+            log_actions line.strip
           end
           # Puis on affiche toutes les erreurs d'un coup
-          puts "errors:".red
+          if line = stderr.gets
+            log_actions "============".red
+            log_actions line.strip
+          end
           while line = stderr.gets
-            puts line
+            log_actions line.strip
           end
           puts line
           # Affichage du résultat
           if wait_thr.value.success?
-            log_actions "resultat ok".green
+            log_actions ":Success".green
           else
-            log_actions "resultat ko".red
+            log_actions ":Failure".red
           end # if
         end #popen3 cmd
       end # button
     end # each
 
     # Panel de log
-    @f.pane(:log, weight:1.8).puts("Logs des actions".yellow)
-    @f.pane(:log, weight:1.8).subpane(:log_actions).puts("en attente d'actions...")
+    @f.pane(:log, weight:3).puts("Logs des actions".yellow)
+    @f.pane(:log, weight:3).subpane(:log_actions).puts("en attente d'actions...")
   end # initialize
 
   # Remplace les balises <> par leurs valeurs de configs
@@ -90,11 +97,13 @@ class FenetreApp
   # Affiche dans le panel de log
   def log_actions(str, clean=false)
     if clean
-      @f.pane(:log, weight:1.8).subpane(:log_actions).replace("")
-      puts "=================="
-    end
-    puts str
-    @f.pane(:log, weight:1.8).subpane(:log_actions).puts(str)
+      @f.pane(:log, weight:3).subpane(:log_actions).replace("")
+    end # if
+    # Met en couleurs certains mots dans le tableau de hash COLORIZE
+    $COLORIZE.each do |item|
+      str.sub! item[:str], item[:str].colorize(item[:color])
+    end # each
+    @f.pane(:log, weight:3).subpane(:log_actions).puts(str)
   end # log_actions
 
   # Attend que la fenêtre se ferme

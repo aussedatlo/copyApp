@@ -13,8 +13,15 @@ sudo gem install flammarion colorize
 ```
 ## Utilisation
 
-Le script se base sur un fichier YAML afin de générer l'interface. il est
-composé de deux sections principales.
+Le script se base sur un fichier YAML afin de générer l'interface. Par défault,
+le script ira chercher le fichier `app.yml` dans le dossier actuel.
+Sinon, il est possible de préciser le fichier à charger de la manière suivante:
+
+```
+./App <config_file.yml>
+```
+
+Le fichier de configuration YAML est composé de deux sections principales.
 
 ### Section `:configs`
 
